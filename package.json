@@ -12,8 +12,9 @@
   "scripts": {
     "test": "tsc -p test/ && mocha test/unit/**/*.spec.js --exit",
     "test:coverage": "nyc npm t",
-    "start": "npm run build && node ./dist/index.js",
-    "build": "copyfiles -f ./src/resources/**/* ./dist/resources && tsc",
+    "start": "node ./dist/index.js",
+    "dev": "npm run build && npm run start",
+    "build": "tsc",
     "prepare": "npm run build"
   },
   "nyc": {
@@ -44,7 +45,6 @@
     "@types/node": "^8.5.7",
     "@types/sinon": "^4.1.3",
     "chai": "^4.1.2",
-    "copyfiles": "^1.2.0",
     "mocha": "^4.1.0",
     "nyc": "^11.4.1",
     "sinon": "^4.2.1",

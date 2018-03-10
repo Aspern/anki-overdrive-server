@@ -1,0 +1,78 @@
+import {IVehicleStore} from "./IVehicleStore";
+import {IVehicle} from "anki-overdrive-api";
+import {IVehicleScanner} from "anki-overdrive-api";
+import {Bluetooth} from "anki-overdrive-api/lib/ble/Bluetooth";
+import {VehicleScanner} from "anki-overdrive-api/lib/vehicle/VehicleScanner";
+
+class VehicleStore implements IVehicleStore{
+
+    private static instance: VehicleStore
+
+    private _store: Map<string, IVehicle>
+    private _task: any
+    private _scanner: IVehicleScanner
+    private _interval = 3000
+
+    private constructor() {
+        const bluetooth = new Bluetooth()
+
+        this._store = new Map<string, IVehicle>()
+        this._scanner = new VehicleScanner(bluetooth)
+        this._task = setInterval(this.synchronize.bind(this), this._interval)
+    }
+
+    public static getInstance() {
+        if(!VehicleStore.instance) {
+            VehicleStore.instance = new VehicleStore()
+        }
+
+        return VehicleStore.instance
+    }
+
+    public getVehicle(id: string): IVehicle | undefined {
+        return this._store.get(id);
+    }
+
+    public getVehicles(): IVehicle[] {
+        const vehicles:IVehicle[] = []
+
+        this._store.forEach((vehicle) => vehicles.push(vehicle))
+
+        return vehicles
+    }
+
+    private synchronize(): void {
+        const self = this
+
+        this._scanner.findAll().then((vehicles) => {
+
+            // Add all new vehicles found by the scanner.
+            vehicles.forEach(vehicle => {
+                if(!self._store.has(vehicle.id)) {
+                    self._store.set(vehicle.id, vehicle)
+                }
+            })
+
+            // Remove all stored vehicles, not found by the scanner.
+            self._store.forEach((value, key) => {
+                let found = false
+
+                if(!value.connected) {
+                    vehicles.forEach(vehicle => {
+                        if(key === vehicle.id) {
+                            found = true
+                        }
+                    })
+
+                    if(!found) {
+                        self._store.delete(key)
+                    }
+                }
+            })
+
+        }).catch(console.error)
+    }
+
+}
+
+export {VehicleStore}
