@@ -2,6 +2,7 @@ import {VehicleStore} from "../model/VehicleStore";
 import {KafkaClient, Producer} from "kafka-node";
 import {LoggerFactory} from "../common/Logging";
 import {Logger} from "log4js";
+import {Settings} from "../Settings";
 
 class KafkaController {
 
@@ -13,7 +14,7 @@ class KafkaController {
     public constructor() {
         this.logger.info('Starting KafkaController...')
         this.vehicleStore = VehicleStore.getInstance()
-        this.kafkaClient = new KafkaClient()
+        this.kafkaClient = new KafkaClient({kafkaHost: Settings.kafkaHost})
         this.producer = new Producer(this.kafkaClient)
 
         const self = this
@@ -23,9 +24,6 @@ class KafkaController {
                 self.logger.info(`Found vehicle ${vehicle.id}`)
                 vehicle.addListener(message => {
                     if(message) self.producer.send([{topic: 'vehicle_message', messages: message.toJsonString()}], error => self.logger.error(error))
-                })
-                vehicle.connect().then(() => {
-                    vehicle.setSpeed(300, 50)
                 })
             })
         })

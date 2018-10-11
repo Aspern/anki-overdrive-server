@@ -35,6 +35,16 @@ class VehicleStore implements IVehicleStore{
         return this._store.get(id);
     }
 
+    getVehicleAt(index: number): IVehicle | undefined {
+        let i = 0
+        let vehicleAtIndex: IVehicle | undefined = undefined
+        this._store.forEach(vehicle => {
+            if(i++ === index)
+                vehicleAtIndex = vehicle
+        })
+        return vehicleAtIndex
+    }
+
     public getVehicles(): IVehicle[] {
         const vehicles:IVehicle[] = []
 
@@ -86,6 +96,8 @@ class VehicleStore implements IVehicleStore{
 
         }).catch(console.error)
     }
+
+
 
 }
 

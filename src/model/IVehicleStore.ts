@@ -4,6 +4,8 @@ interface IVehicleStore {
 
     getVehicle(id: string): IVehicle | undefined
 
+    getVehicleAt(index: number): IVehicle | undefined
+
     getVehicles(): IVehicle[]
 
     onVehicleOnline(listener: (vehicle: IVehicle) => any): IVehicleStore
