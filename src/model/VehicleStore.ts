@@ -12,6 +12,8 @@ class VehicleStore implements IVehicleStore{
     private _task: any
     private _scanner: IVehicleScanner
     private _interval = 3000
+    private _onlineListener: (vehicle: IVehicle) => any = () => {}
+    private _offlineListener: (vehicleId: string) => any = () => {}
 
     private constructor() {
         const bluetooth = new Bluetooth()
@@ -41,6 +43,16 @@ class VehicleStore implements IVehicleStore{
         return vehicles
     }
 
+    onVehicleOffline(listener: (vehicleId: string) => any): IVehicleStore {
+        this._offlineListener = listener
+        return this
+    }
+
+    onVehicleOnline(listener: (vehicle: IVehicle) => any): IVehicleStore {
+        this._onlineListener = listener
+        return this
+    }
+
     private synchronize(): void {
         const self = this
 
@@ -50,6 +62,7 @@ class VehicleStore implements IVehicleStore{
             vehicles.forEach(vehicle => {
                 if(!self._store.has(vehicle.id)) {
                     self._store.set(vehicle.id, vehicle)
+                    self._onlineListener(vehicle)
                 }
             })
 
@@ -66,6 +79,7 @@ class VehicleStore implements IVehicleStore{
 
                     if(!found) {
                         self._store.delete(key)
+                        self._offlineListener(key)
                     }
                 }
             })

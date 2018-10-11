@@ -1,7 +1,8 @@
-import {RestApi} from "./restapi"
+import {LoggerFactory} from "./common/Logging";
+import {KafkaController} from "./kafka/KafkaController";
 
-const port = process.env.VEHICLE_SERVER_PORT || 4711
+const logger = LoggerFactory.getLogger()
 
-RestApi.listen(port, () => {
-    console.log("REST api is running on " + port)
-})
+logger.info('Starting vehicle server...')
+
+new KafkaController()

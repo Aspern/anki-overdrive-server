@@ -6,6 +6,10 @@ interface IVehicleStore {
 
     getVehicles(): IVehicle[]
 
+    onVehicleOnline(listener: (vehicle: IVehicle) => any): IVehicleStore
+
+    onVehicleOffline(listener: (vehicleId: string) => any): IVehicleStore
+
 }
 
 export {IVehicleStore}
