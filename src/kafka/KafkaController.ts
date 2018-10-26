@@ -20,7 +20,7 @@ class KafkaController {
         const self = this
 
         this._producer.on('error', (error: any) => {
-            self._logger.error(error)
+            if(error) self._logger.error(error)
         })
         this._producer.on('ready', this.registerVehicleListeners.bind(this))
     }
@@ -40,7 +40,7 @@ class KafkaController {
                 if(message) {
                     self._producer.send(
                         [{topic: 'vehicle_message', messages: message.toJsonString()}],
-                        error => self._logger.error(error)
+                        (error: any) => {if(error) self._logger.error(error)}
                     )
                 }
             }
