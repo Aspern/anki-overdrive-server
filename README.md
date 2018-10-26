@@ -12,3 +12,7 @@ REST API or by consuming the kafka topic `vehicle_messages`.
 ## REST API
 
 The documentation of the REST API can be found [here](https://app.swaggerhub.com/apis-docs/Aspern/Anki-Overdrive/1.0.0).
+
+## Changelog
+
+Changes are documented in the [Changelog](CHANGELOG.md)

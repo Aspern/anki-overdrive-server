@@ -101,7 +101,7 @@ VehicleController.post('/:id/disconnect', (request: Request, response: Response)
     const vehicle   = store.getVehicle(id)
 
     if(!vehicle)            return response.status(404).send(`Vehicle [${id}] does not exist.`)
-    if(vehicle.connected)   return response.status(304).send(`Vehicle [${id}] is already disconnected.`)
+    if(!vehicle.connected)   return response.status(304).send(`Vehicle [${id}] is already disconnected.`)
 
     vehicle.disconnect().then(() => {
         response.status(200).send(`Disconnected vehicle [${id}].`)
