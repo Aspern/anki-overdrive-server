@@ -1,5 +1,6 @@
 import {Request, Response, Router} from "express"
 import {VehicleStore} from "../../model/VehicleStore";
+import {Settings} from "../../Settings";
 
 const VehicleController: Router = Router()
 const store = VehicleStore.getInstance()
@@ -9,7 +10,10 @@ VehicleController.get('/', (request: Request, response: Response) => {
         store.getVehicles().map(vehicle => {
             return {
                 address: vehicle.address,
+                connected: vehicle.connected,
                 id: vehicle.id,
+                name: Settings.vehicleNames.get(vehicle.id),
+                offset: vehicle.offset
             }
         })
     )
@@ -67,6 +71,48 @@ VehicleController.post('/:id/disconnect', (request: Request, response: Response)
         response.sendStatus(500)
             .send(error.toLocaleString())
     })
+})
+
+VehicleController.post('/:id/set-offset', (request: Request, response: Response) => {
+    const id = request.params.id
+    const offset = request.body.offset
+    const vehicle = store.getVehicle(id)
+
+    if(!vehicle) {
+        return response.sendStatus(404)
+    }
+
+    if(!vehicle.connected) {
+        return response.sendStatus(304)
+    }
+    try {
+        vehicle.setOffset(offset)
+        response.sendStatus(200)
+    } catch(error) {
+        response.sendStatus(500)
+            .send(error.toLocaleString())
+    }
+})
+
+VehicleController.post('/:id/set-speed', (request: Request, response: Response) => {
+    const id = request.params.id
+    const speed = request.body.speed
+    const vehicle = store.getVehicle(id)
+
+    if(!vehicle) {
+        return response.sendStatus(404)
+    }
+
+    if(!vehicle.connected) {
+        return response.sendStatus(304)
+    }
+    try {
+        vehicle.setSpeed(speed)
+        response.sendStatus(200)
+    } catch(error) {
+        response.sendStatus(500)
+            .send(error.toLocaleString())
+    }
 })
 
 VehicleController.post('/:id/cancel-lane-change', (request: Request, response: Response) => {
