@@ -3,20 +3,23 @@ const devMode = process.argv.indexOf('dev') > 0
 
 configure({
     appenders: {
+        console: {
+            type: 'console'
+        },
         file: {
-            type: 'dateFile',
             filename: 'log/application.log',
-            pattern: '-yyyy-MM-dd'
+            pattern: '-yyyy-MM-dd',
+            type: 'dateFile',
         }
     },
     categories: {
-        default: { appenders: ['file'], level: 'WARN'},
-        dev: { appenders: ['file'], level: 'DEBUG' }
+        default: { appenders: ['console', 'file'], level: 'INFO'},
+        dev: { appenders: ['console', 'file'], level: 'DEBUG' }
     }
 })
 
 class LoggerFactory {
-    static getLogger(): Logger {
+    public static getLogger(): Logger {
         return  getLogger(devMode ? 'dev' : 'default')
     }
 }
