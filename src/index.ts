@@ -1,6 +1,6 @@
-import {LoggerFactory} from "./server/common/Logging";
-import {KafkaController} from "./server/kafka/KafkaController";
-import {VehicleCli} from "./server/cli/VehicleCli";
+import {LoggerFactory} from "./common/Logging";
+import {KafkaController} from "./kafka/KafkaController";
+import {VehicleCli} from "./cli/VehicleCli";
 
 const logger = LoggerFactory.getLogger()
 
