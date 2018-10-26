@@ -14,7 +14,7 @@ class WebService {
         const self = this
 
         RestApi.listen(this._port, () => {
-            self._logger.info(`Webservice running on port ${self._port}.`)
+            self._logger.debug(`Webservice running on port ${self._port}.`)
         })
     }
 }
