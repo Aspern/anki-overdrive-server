@@ -3,9 +3,13 @@
   "rules": {
     "arrow-parens": ["ban-single-arg-parens"],
     "eofline": false,
+    "curly": false,
+    "quotemark": false,
     "interface-name": [true],
     "no-shadowed-variable": false,
     "no-empty": false,
+    "no-console": false,
+    "radix": false,
     "no-var-requires": false,
     "max-line-length": [true, 140],
     "no-unused-expression": false,
@@ -17,7 +21,8 @@
       true,
       "ban-keywords",
       "check-format",
-      "allow-leading-underscore"
+      "allow-leading-underscore",
+      "allow-pascal-case"
     ],
     "indent": [true, "spaces"],
     "whitespace": [

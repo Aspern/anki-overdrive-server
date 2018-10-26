@@ -16,14 +16,22 @@ class KafkaController {
         this.vehicleStore = VehicleStore.getInstance()
         this.kafkaClient = new KafkaClient({kafkaHost: Settings.kafkaHost})
         this.producer = new Producer(this.kafkaClient)
-
         const self = this
+
+        this.producer.on('error', (error: any) => {
+            self.logger.error(error)
+        })
 
         this.producer.on('ready', () => {
             self.vehicleStore.onVehicleOnline(vehicle => {
                 self.logger.info(`Found vehicle ${vehicle.id}`)
-                vehicle.addListener(message => {
-                    if(message) self.producer.send([{topic: 'vehicle_message', messages: message.toJsonString()}], error => self.logger.error(error))
+                vehicle.addListener((message: any) => {
+                    if(message) {
+                        self.producer.send(
+                            [{topic: 'vehicle_message', messages: message.toJsonString()}],
+                            error => self.logger.error(error)
+                        )
+                    }
                 })
             })
         })

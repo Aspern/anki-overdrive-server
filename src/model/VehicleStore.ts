@@ -3,8 +3,10 @@ import {IVehicle} from "anki-overdrive-api";
 import {IVehicleScanner} from "anki-overdrive-api";
 import {Bluetooth} from "anki-overdrive-api/lib/ble/Bluetooth";
 import {VehicleScanner} from "anki-overdrive-api/lib/vehicle/VehicleScanner";
+import {Logger} from "log4js";
+import {LoggerFactory} from "../common/Logging";
 
-class VehicleStore implements IVehicleStore{
+class VehicleStore implements IVehicleStore {
 
     private static instance: VehicleStore
 
@@ -12,6 +14,7 @@ class VehicleStore implements IVehicleStore{
     private _task: any
     private _scanner: IVehicleScanner
     private _interval = 3000
+    private _logger: Logger
     private _onlineListener: (vehicle: IVehicle) => any = () => {}
     private _offlineListener: (vehicleId: string) => any = () => {}
 
@@ -21,6 +24,7 @@ class VehicleStore implements IVehicleStore{
         this._store = new Map<string, IVehicle>()
         this._scanner = new VehicleScanner(bluetooth)
         this._task = setInterval(this.synchronize.bind(this), this._interval)
+        this._logger = LoggerFactory.getLogger()
     }
 
     public static getInstance() {
@@ -35,9 +39,9 @@ class VehicleStore implements IVehicleStore{
         return this._store.get(id);
     }
 
-    getVehicleAt(index: number): IVehicle | undefined {
+    public getVehicleAt(index: number): IVehicle | undefined {
         let i = 0
-        let vehicleAtIndex: IVehicle | undefined = undefined
+        let vehicleAtIndex: IVehicle | undefined
         this._store.forEach(vehicle => {
             if(i++ === index)
                 vehicleAtIndex = vehicle
@@ -46,19 +50,19 @@ class VehicleStore implements IVehicleStore{
     }
 
     public getVehicles(): IVehicle[] {
-        const vehicles:IVehicle[] = []
+        const vehicles: IVehicle[] = []
 
         this._store.forEach((vehicle) => vehicles.push(vehicle))
 
         return vehicles
     }
 
-    onVehicleOffline(listener: (vehicleId: string) => any): IVehicleStore {
+    public onVehicleOffline(listener: (vehicleId: string) => any): IVehicleStore {
         this._offlineListener = listener
         return this
     }
 
-    onVehicleOnline(listener: (vehicle: IVehicle) => any): IVehicleStore {
+    public onVehicleOnline(listener: (vehicle: IVehicle) => any): IVehicleStore {
         this._onlineListener = listener
         return this
     }
@@ -94,11 +98,8 @@ class VehicleStore implements IVehicleStore{
                 }
             })
 
-        }).catch(console.error)
+        }).catch(this._logger.error)
     }
-
-
-
 }
 
 export {VehicleStore}

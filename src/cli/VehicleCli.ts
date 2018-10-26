@@ -4,20 +4,19 @@ import * as ReadLine from 'readline'
 import {Logger} from "log4js";
 import {LoggerFactory} from "../common/Logging";
 
-const Commands = {
-    HELP: 'help',
-    LIST: 'ls',
-    EXIT: 'exit',
+const COMMANDS = {
+    BATTERY_LEVEL: 'battery',
+    CHANGE_LANE: 'lane',
     CONNECT: 'con',
     DISCONNECT: 'dcon',
-    SET_SPEED: 'speed',
-    BATTERY_LEVEL: 'battery',
+    EXIT: 'exit',
+    HELP: 'help',
+    LIST: 'ls',
     PING: 'ping',
-    VERSION: 'version',
+    SET_SPEED: 'speed',
     TURN: 'turn',
-    CHANGE_LANE: 'lane'
+    VERSION: 'version'
 }
-
 
 class VehicleCli {
     private store: IVehicleStore
@@ -38,40 +37,40 @@ class VehicleCli {
 
     private parseLice(line: string) {
         const command = this.parseCommand(line)
-        const args:any = this.parseArgs(line)
+        const args: any = this.parseArgs(line)
 
         switch(command) {
-            case Commands.HELP:
+            case COMMANDS.HELP:
                 this.showHelp()
                 break
-            case Commands.LIST:
+            case COMMANDS.LIST:
                 this.listVehicles()
                 break
-            case Commands.EXIT:
+            case COMMANDS.EXIT:
                 this.exit()
                 break
-            case Commands.CONNECT:
+            case COMMANDS.CONNECT:
                 this.connect(...args)
                 break
-            case Commands.DISCONNECT:
+            case COMMANDS.DISCONNECT:
                 this.disconnect(...args)
                 break
-            case Commands.SET_SPEED:
+            case COMMANDS.SET_SPEED:
                 this.setSpeed(args)
                 break
-            case Commands.CHANGE_LANE:
+            case COMMANDS.CHANGE_LANE:
                 this.changeLane(args)
                 break
-            case Commands.TURN:
+            case COMMANDS.TURN:
                 this.turn(...args)
                 break
-            case Commands.BATTERY_LEVEL:
+            case COMMANDS.BATTERY_LEVEL:
                 this.queryBatteryLevel(...args)
                 break
-            case Commands.VERSION:
+            case COMMANDS.VERSION:
                 this.queryVersion(...args)
                 break
-            case Commands.PING:
+            case COMMANDS.PING:
                 this.queryPing(...args)
                 break
         }
@@ -82,7 +81,7 @@ class VehicleCli {
         return line.split(' ')[0]
     }
 
-    private parseArgs(line:string): Array<string>  {
+    private parseArgs(line: string): string[]  {
         return line.split(' ').slice(1)
     }
 
@@ -93,19 +92,19 @@ class VehicleCli {
         }
     }
 
-    private queryBatteryLevel(index?:string) {
+    private queryBatteryLevel(index?: string) {
         console.log(`\tVEHICLE_ID   BATTERY_LEVEL`)
         if(index) {
             const vehicle = this.store.getVehicleAt(parseInt(index))
             if(vehicle && vehicle.connected) {
-                vehicle.queryBatterLevel().then((batteryLevel:any) => {
+                vehicle.queryBatterLevel().then((batteryLevel: any) => {
                     console.log(`\t${vehicle.id}   ${batteryLevel}`)
                 })
             }
         } else {
             this.store.getVehicles().forEach(vehicle => {
                 if(vehicle.connected) {
-                    vehicle.queryBatterLevel().then((batteryLevel:any) => {
+                    vehicle.queryBatterLevel().then((batteryLevel: any) => {
                         console.log(`\t${vehicle.id}   ${batteryLevel}`)
                     })
                 }
@@ -113,19 +112,19 @@ class VehicleCli {
         }
     }
 
-    private queryVersion(index?:string) {
+    private queryVersion(index?: string) {
         console.log(`\tVEHICLE_ID   VERSION`)
         if(index) {
             const vehicle = this.store.getVehicleAt(parseInt(index))
             if(vehicle && vehicle.connected) {
-                vehicle.queryVersion().then((version:any) => {
+                vehicle.queryVersion().then((version: any) => {
                     console.log(`\t${vehicle.id}   ${version}`)
                 })
             }
         } else {
             this.store.getVehicles().forEach(vehicle => {
                 if(vehicle.connected) {
-                    vehicle.queryVersion().then((version:any) => {
+                    vehicle.queryVersion().then((version: any) => {
                         console.log(`\t${vehicle.id}   ${version}`)
                     })
                 }
@@ -133,19 +132,19 @@ class VehicleCli {
         }
     }
 
-    private queryPing(index?:string) {
+    private queryPing(index?: string) {
         console.log(`\tVEHICLE_ID   BATTERY_LEVEL`)
         if(index) {
             const vehicle = this.store.getVehicleAt(parseInt(index))
             if(vehicle && vehicle.connected) {
-                vehicle.queryPing().then((ping:any) => {
+                vehicle.queryPing().then((ping: any) => {
                     console.log(`\t${vehicle.id}   ${ping}`)
                 })
             }
         } else {
             this.store.getVehicles().forEach(vehicle => {
                 if(vehicle.connected) {
-                    vehicle.queryPing().then((ping:any) => {
+                    vehicle.queryPing().then((ping: any) => {
                         console.log(`\t${vehicle.id}   ${ping}`)
                     })
                 }
@@ -172,7 +171,6 @@ class VehicleCli {
             turn        index                   Turns the specified vehicle by 180°.
         `)
     }
-
 
     private connect(index?: string) {
         if(index) {
