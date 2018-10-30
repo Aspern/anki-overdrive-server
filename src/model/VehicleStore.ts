@@ -74,7 +74,7 @@ class VehicleStore implements IVehicleStore {
 
             // Add all new vehicles found by the scanner.
             vehicles.forEach(vehicle => {
-                if(!self._store.has(vehicle.id)) {
+                if(!self._store.has(vehicle.id) || vehicle.connected !== !!self._store.get(vehicle.id)) {
                     self._store.set(vehicle.id, vehicle)
                     self._onlineListener(vehicle)
                 }

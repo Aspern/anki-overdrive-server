@@ -32,7 +32,6 @@ class KafkaController {
     }
 
     private createVehicleListener(vehicle: IVehicle) {
-        this._logger.debug(`Vehicle ${vehicle.id} online.`)
         const self = this
 
         if(!this._listeners.has(vehicle.id)) {
@@ -45,14 +44,15 @@ class KafkaController {
                 }
             }
 
+            this._logger.debug(`Adding Kafka listener for vehicle [${vehicle.id}]`)
             vehicle.addListener(listener)
             this._listeners.set(vehicle.id, listener)
         }
     }
 
     private removeVehicleListener(vehicleId: string) {
-        this._logger.debug(`Vehicle ${vehicleId} offline.`)
         if(this._listeners.has(vehicleId)) {
+            this._logger.debug(`Removing Kafka listener for vehicle [${vehicleId}]`)
             this._listeners.delete(vehicleId)
         }
     }
