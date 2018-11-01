@@ -4,7 +4,13 @@ import {VehicleStore} from "./model/VehicleStore";
 import {WebService} from "./WebService";
 import {Settings} from "./Settings";
 
+// No event listener limit.
+require('events').EventEmitter.prototype._maxListeners = 0;
 const logger = LoggerFactory.getLogger()
+
+process.on('uncaughtException', error => {
+    logger.error("Found uncaught exception", error)
+});
 
 logger.info('Starting Vehicle Server.')
 logger.info('Bringing up KafkaController...')
