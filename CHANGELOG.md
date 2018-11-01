@@ -5,3 +5,4 @@
 - Implemented `KafkaController` which detects connecting vehicles and registers a
 listener to send all kind of vehicle messages to topic `vehicle_messages`.
 - Added file/console logging.
+- Added SIGINT listener to release BLE resources properly.
