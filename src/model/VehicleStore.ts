@@ -74,7 +74,8 @@ class VehicleStore implements IVehicleStore {
 
             // Add all new vehicles found by the scanner.
             vehicles.forEach(vehicle => {
-                if(!self._store.has(vehicle.id) || vehicle.connected !== !!self._store.get(vehicle.id)) {
+                if(!self._store.has(vehicle.id) || self.vehicleInStoreHasWrongConnectionState(vehicle.id, vehicle.connected)) {
+                    self._logger.debug(`Added vehicle ${vehicle.id}.`)
                     self._store.set(vehicle.id, vehicle)
                     self._onlineListener(vehicle)
                 }
@@ -92,6 +93,7 @@ class VehicleStore implements IVehicleStore {
                     })
 
                     if(!found) {
+                        self._logger.debug(`Removed vehicle ${key}.`)
                         self._store.delete(key)
                         self._offlineListener(key)
                     }
@@ -100,6 +102,13 @@ class VehicleStore implements IVehicleStore {
 
         }).catch(this._logger.error)
     }
+
+    private vehicleInStoreHasWrongConnectionState(vehicleId: string, state: boolean): boolean {
+        const vehicle = this._store.get(vehicleId)
+        if(vehicle) return vehicle.connected !== state
+        return false
+    }
+
 }
 
 export {VehicleStore}

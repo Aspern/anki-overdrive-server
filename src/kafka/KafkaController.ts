@@ -37,8 +37,9 @@ class KafkaController {
         if(!this._listeners.has(vehicle.id)) {
             const listener = (message: any) => {
                 if(message) {
+                    this._logger.debug(`${vehicle.id} : ${Settings.kafkaTopic} : ${ message.toJsonString()}`)
                     self._producer.send(
-                        [{topic: 'vehicle_message', messages: message.toJsonString()}],
+                        [{topic: Settings.kafkaTopic, messages: message.toJsonString()}],
                         (error: any) => {if(error) self._logger.error(error)}
                     )
                 }
