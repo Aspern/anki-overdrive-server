@@ -6,17 +6,18 @@ import {Straight} from "anki-overdrive-api/lib/track/Straight";
 import {Curve} from "anki-overdrive-api/lib/track/Curve";
 import {IVehicleMessage} from "anki-overdrive-api/lib/message/IVehicleMessage";
 import {LoggerFactory} from "../../common/Logging";
+import {Settings} from "../../Settings";
 
 const store = VehicleStore.getInstance()
 const logger = LoggerFactory.getLogger()
 const AntiCollisionController: Router = Router()
 const lastPositionUpdateMessage = new Map<string, LocalizationPositionUpdate|null>([
-    ['ed0c94216553', null],
-    ['eb401ef0f82b', null]
+    [Settings.skullId, null],
+    [Settings.groundShockId, null]
 ])
 const keyForCounterpart = new Map<string, string>([
-    ['ed0c94216553', 'eb401ef0f82b'],
-    ['eb401ef0f82b', 'ed0c94216553']
+    [Settings.skullId, Settings.groundShockId],
+    [Settings.groundShockId, Settings.skullId]
 ])
 const messageListeners = new Map<string, any>()
 const track = new Track([
@@ -33,9 +34,9 @@ function antiCollision(vehicleId: string, distance: number) {
     // const lastMessage = lastPositionUpdateMessage.get(vehicleId)
     const vehicle = store.getVehicle(vehicleId)
 
-    if(vehicle && vehicleId === 'ed0c94216553' && distance <= 2) {
+    if(vehicle && vehicleId === Settings.skullId && distance <= 2) {
         vehicle.setSpeed(390)
-    } else if(vehicle && vehicleId === 'ed0c94216553') {
+    } else if(vehicle && vehicleId === Settings.skullId) {
         vehicle.setSpeed(600)
     }
 }
@@ -60,19 +61,19 @@ const messageListener = (message: IVehicleMessage) => {
 }
 
 AntiCollisionController.post('/', (request: Request, response: Response, next) => {
-    const v1 = store.getVehicle('ed0c94216553')
-    const v2 = store.getVehicle('eb401ef0f82b')
+    const v1 = store.getVehicle(Settings.skullId)
+    const v2 = store.getVehicle(Settings.groundShockId)
 
     if(!v1)             return response.status(404).send(`Vehicle [ed0c94216553] does not exist.`)
     if(!v2)             return response.status(404).send(`Vehicle [eb401ef0f82b] does not exist.`)
     if(!v1.connected)   return response.status(409).send(`Vehicle [ed0c94216553] is not connected.`)
     if(!v2.connected)   return response.status(409).send(`Vehicle [eb401ef0f82b] is not connected.`)
 
-    messageListeners.set('ed0c94216553', messageListener.bind({}))
-    messageListeners.set('eb401ef0f82b', messageListener.bind({}))
+    messageListeners.set(Settings.skullId, messageListener.bind({}))
+    messageListeners.set(Settings.groundShockId, messageListener.bind({}))
 
-    v1.addListener(messageListeners.get('ed0c94216553'))
-    v2.addListener(messageListeners.get('eb401ef0f82b'))
+    v1.addListener(messageListeners.get(Settings.skullId))
+    v2.addListener(messageListeners.get(Settings.groundShockId))
 
     try {
        v1.setSpeed(600)
@@ -94,8 +95,8 @@ AntiCollisionController.post('/', (request: Request, response: Response, next) =
 })
 
 AntiCollisionController.delete('/', (request: Request, response: Response) => {
-    const v1 = store.getVehicle('ed0c94216553')
-    const v2 = store.getVehicle('eb401ef0f82b')
+    const v1 = store.getVehicle(Settings.skullId)
+    const v2 = store.getVehicle(Settings.groundShockId)
 
     if(!v1)             return response.status(404).send(`Vehicle [ed0c94216553] does not exist.`)
     if(!v2)             return response.status(404).send(`Vehicle [eb401ef0f82b] does not exist.`)
@@ -103,8 +104,8 @@ AntiCollisionController.delete('/', (request: Request, response: Response) => {
     if(!v2.connected)   return response.status(409).send(`Vehicle [eb401ef0f82b] is not connected.`)
 
     try {
-       v1.removeListener(messageListeners.get('ed0c94216553'))
-       v2.removeListener(messageListeners.get('eb401ef0f82b'))
+       v1.removeListener(messageListeners.get(Settings.skullId))
+       v2.removeListener(messageListeners.get(Settings.groundShockId))
        v1.setSpeed(0, 500)
        v2.setSpeed(0, 500)
        response.status(200).send(`Stopped Anti-Collision`)
